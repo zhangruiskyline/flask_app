@@ -1,22 +1,25 @@
 <html>
   <head>
-    {% if title %}
-    <title>{{ title }} - microblog</title>
-    {% else %}
     <title>microblog</title>
-    {% endif %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
   </head>
   <body>
-    <div>Microblog: <a href="/index">Home</a></div>
+    <div>Microblog:
+        <a href="{{ url_for('index') }}">Home</a>
+        {% if g.user.is_authenticated %}
+        | <a href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
+    </div>
     <hr>
     {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-        {% for message in messages %}
-            <li>{{ message }} </li>
-        {% endfor %}
-        </ul>
-      {% endif %}
+    {% if messages %}
+    <ul>
+    {% for message in messages %}
+        <li>{{ message }} </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
     {% endwith %}
     {% block content %}{% endblock %}
   </body>
