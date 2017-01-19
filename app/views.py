@@ -1,14 +1,13 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required, LoginManager
-from app import app, db, lm, oid
+from app import app, db, lm
 from .forms import LoginForm
 from .model import User
 
 
 @lm.user_loader
-def load_user(id):
-    return User.query.get(int(id))
-
+def user_loader(id):
+    return User.query.get(id)
 
 @app.before_request
 def before_request():
@@ -41,19 +40,20 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         session['remember_me'] = form.remember_me.data
-        user = User.query.get(form.email.data)
+        #print form.data['user_name']
+        #user_id = User.query.get(form.data['user_name'])
+        user = User.query.filter_by(email=form.data['user_name']).first()
         if user is None:
-            return render_template("login.html", form=form)
-        nickname = user.email.split('@')[0]
-        user = User(nickname=nickname, email=user)
-        db.session.add(user)
-        db.session.commit()
+            email_addr = form.data['user_name']
+            nickname_str = email_addr.split('@')[0]
+            user = User(nickname=nickname_str, email=email_addr)
+            db.session.add(user)
+            db.session.commit()
         remember_me = False
         if 'remember_me' in session:
             remember_me = session['remember_me']
             session.pop('remember_me', None)
         login_user(user, remember=remember_me)
-        #next = flask.request.args.get('next')
         return redirect(url_for('index'))
     return render_template("login.html", form=form)
 
