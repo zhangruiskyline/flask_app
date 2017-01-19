@@ -40,8 +40,6 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         session['remember_me'] = form.remember_me.data
-        #print form.data['user_name']
-        #user_id = User.query.get(form.data['user_name'])
         user = User.query.filter_by(email=form.data['user_name']).first()
         if user is None:
             email_addr = form.data['user_name']
