@@ -1,0 +1,74 @@
+2017-01-19 22:35:45,532 INFO: microblog startup [in /Users/ruizhang/Dropbox/micro_blog/app/__init__.py:36]
+2017-01-20 10:17:18,577 INFO: microblog startup [in /Users/ruizhang/Dropbox/micro_blog/app/__init__.py:36]
+2017-01-20 10:17:41,159 ERROR: Exception on /authorize/twitter [GET] [in /Users/ruizhang/anaconda/lib/python2.7/site-packages/flask/app.py:1423]
+Traceback (most recent call last):
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/flask/app.py", line 1817, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/flask/app.py", line 1477, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/flask/app.py", line 1381, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/flask/app.py", line 1475, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/flask/app.py", line 1461, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/ruizhang/Dropbox/micro_blog/app/views.py", line 107, in oauth_authorize
+    return oauth.authorize()
+  File "/Users/ruizhang/Dropbox/micro_blog/app/oauth.py", line 86, in authorize
+    params={'oauth_callback': self.get_callback_url()}
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/rauth/service.py", line 244, in get_request_token
+    process_token_request(r, decoder, key_token, key_token_secret)
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/rauth/service.py", line 24, in process_token_request
+    raise KeyError(PROCESS_TOKEN_ERROR.format(key=bad_key, raw=r.content))
+KeyError: 'Decoder failed to handle oauth_token with data as returned by provider. A different decoder may be needed. Provider returned: {"errors":[{"code":32,"message":"Could not authenticate you."}]}'
+2017-01-20 14:19:33,450 INFO: microblog startup [in /Users/ruizhang/Dropbox/micro_blog/app/__init__.py:36]
+2017-01-20 14:19:51,919 ERROR: Exception on /login [POST] [in /Users/ruizhang/anaconda/lib/python2.7/site-packages/flask/app.py:1423]
+Traceback (most recent call last):
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/flask/app.py", line 1817, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/flask/app.py", line 1477, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/flask/app.py", line 1381, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/flask/app.py", line 1475, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/flask/app.py", line 1461, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/ruizhang/Dropbox/micro_blog/app/views.py", line 58, in login
+    db.session.add(user.follow(user))
+  File "/Users/ruizhang/Dropbox/micro_blog/app/model.py", line 57, in follow
+    if not self.is_following(user):
+  File "/Users/ruizhang/Dropbox/micro_blog/app/model.py", line 67, in is_following
+    return self.followed.filter(followers.c.followed_id == user.id).count() > 0
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/sqlalchemy/orm/query.py", line 2601, in count
+    return self.from_self(col).scalar()
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/sqlalchemy/orm/query.py", line 2400, in scalar
+    ret = self.one()
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/sqlalchemy/orm/query.py", line 2369, in one
+    ret = list(self)
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/sqlalchemy/orm/query.py", line 2412, in __iter__
+    return self._execute_and_instances(context)
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/sqlalchemy/orm/query.py", line 2427, in _execute_and_instances
+    result = conn.execute(querycontext.statement, self._params)
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/sqlalchemy/engine/base.py", line 729, in execute
+    return meth(self, multiparams, params)
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/sqlalchemy/sql/elements.py", line 321, in _execute_on_connection
+    return connection._execute_clauseelement(self, multiparams, params)
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/sqlalchemy/engine/base.py", line 826, in _execute_clauseelement
+    compiled_sql, distilled_params
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/sqlalchemy/engine/base.py", line 958, in _execute_context
+    context)
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/sqlalchemy/engine/base.py", line 1160, in _handle_dbapi_exception
+    exc_info
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/sqlalchemy/util/compat.py", line 199, in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb)
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/sqlalchemy/engine/base.py", line 951, in _execute_context
+    context)
+  File "/Users/ruizhang/anaconda/lib/python2.7/site-packages/sqlalchemy/engine/default.py", line 436, in do_execute
+    cursor.execute(statement, parameters)
+OperationalError: (OperationalError) no such table: followers u'SELECT count(*) AS count_1 \nFROM (SELECT user.id AS user_id, user.nickname AS user_nickname, user.email AS user_email, user.about_me AS user_about_me, user.last_seen AS user_last_seen \nFROM user, followers \nWHERE followers.follower_id = ? AND followers.followed_id = user.id AND followers.followed_id = ?) AS anon_1' (4, 4)
+2017-01-20 14:24:16,990 INFO: microblog startup [in /Users/ruizhang/Dropbox/micro_blog/app/__init__.py:36]
+2017-01-20 14:24:18,036 INFO: microblog startup [in /Users/ruizhang/Dropbox/micro_blog/app/__init__.py:36]
+2017-01-20 14:27:14,898 INFO: microblog startup [in /Users/ruizhang/Dropbox/micro_blog/app/__init__.py:36]
+2017-01-20 14:27:18,910 INFO: microblog startup [in /Users/ruizhang/Dropbox/micro_blog/app/__init__.py:36]
+2017-01-20 14:27:19,819 INFO: microblog startup [in /Users/ruizhang/Dropbox/micro_blog/app/__init__.py:36]
