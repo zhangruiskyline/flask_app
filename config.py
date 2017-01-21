@@ -32,3 +32,6 @@ OAUTH_CREDENTIALS= {
         'secret': 'm9TEd58DSEtRrZHpz2EjrV9AhsBRxKMo8m3kuIZj3zLwzwIimt'
     }
 }
+
+# pagination
+POSTS_PER_PAGE = 3

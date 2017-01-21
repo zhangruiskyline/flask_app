@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 import os
 import unittest
+from datetime import datetime, timedelta
 
 from config import basedir
 from app import app, db
-from app.model import User
+from app.model import User, Post
 
 class TestCase(unittest.TestCase):
     def setUp(self):
