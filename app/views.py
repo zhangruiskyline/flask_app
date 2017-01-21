@@ -7,6 +7,8 @@ from datetime import datetime
 from oauth import OAuthSignIn
 from config import POSTS_PER_PAGE
 from flask_bcrypt import Bcrypt
+from werkzeug.security import generate_password_hash,check_password_hash
+
 
 
 @lm.user_loader
@@ -54,7 +56,8 @@ def login():
             email_addr = form.data['user_name']
             nickname_str = email_addr.split('@')[0]
             nickname = User.make_unique_nickname(nickname_str)
-            user = User(nickname=nickname, email=email_addr, password=pwd_input)
+            pwd = User.hashed_password(pwd_input)
+            user = User(nickname=nickname, email=email_addr, password=pwd)
             db.session.add(user)
             db.session.commit()
             # make the user follow him/herself

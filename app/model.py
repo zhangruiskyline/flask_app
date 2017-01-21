@@ -1,6 +1,6 @@
 from app import db
-from hashlib import md5
 import urllib
+from hashlib import md5
 
 followers = db.Table('followers',
                      db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
@@ -23,7 +23,7 @@ class User(db.Model):
                                lazy='dynamic')
 
     def is_authenticated(self,password):
-        if self.password == password:
+        if self.password == self.hashed_password(password):
             return True
         else:
             return False
@@ -55,6 +55,10 @@ class User(db.Model):
                 break
             version += 1
         return new_nickname
+
+    @staticmethod
+    def hashed_password(pwd):
+        return md5(pwd.encode()).hexdigest()
 
     def follow(self, user):
         if not self.is_following(user):
