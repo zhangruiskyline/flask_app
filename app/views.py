@@ -65,10 +65,9 @@ def login():
             remember_me = session['remember_me']
             session.pop('remember_me', None)
         #log in back existing user
-        if user:
-            if user.password != pwd_input:
-                flash('Authentication failed.')
-                return redirect(url_for('index'))
+        if user.is_authenticated(pwd_input) is False:
+            flash('Authentication failed.')
+            return redirect(url_for('index'))
 
         login_user(user, remember=remember_me)
         return redirect(url_for('index'))

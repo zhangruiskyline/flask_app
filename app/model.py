@@ -22,9 +22,11 @@ class User(db.Model):
                                backref=db.backref('followers', lazy='dynamic'),
                                lazy='dynamic')
 
-    @property
-    def is_authenticated(self):
-        return True
+    def is_authenticated(self,password):
+        if self.password == password:
+            return True
+        else:
+            return False
 
     @property
     def is_active(self):
