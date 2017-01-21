@@ -6,6 +6,7 @@ from .model import User, Post
 from datetime import datetime
 from oauth import OAuthSignIn
 from config import POSTS_PER_PAGE
+from flask_bcrypt import Bcrypt
 
 
 @lm.user_loader
@@ -45,12 +46,15 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         session['remember_me'] = form.remember_me.data
-        user = User.query.filter_by(email=form.data['user_name']).first()
+        user_input = form.data['user_name']
+        pwd_input = form.data['password']
+        user = User.query.filter_by(email=user_input).first()
+        #register new user
         if user is None:
             email_addr = form.data['user_name']
             nickname_str = email_addr.split('@')[0]
             nickname = User.make_unique_nickname(nickname_str)
-            user = User(nickname=nickname, email=email_addr)
+            user = User(nickname=nickname, email=email_addr, password=pwd_input)
             db.session.add(user)
             db.session.commit()
             # make the user follow him/herself
@@ -60,8 +64,16 @@ def login():
         if 'remember_me' in session:
             remember_me = session['remember_me']
             session.pop('remember_me', None)
+        #log in back existing user
+        if user:
+            if user.password != pwd_input:
+                flash('Authentication failed.')
+                return redirect(url_for('index'))
+
         login_user(user, remember=remember_me)
         return redirect(url_for('index'))
+
+
     return render_template("login.html", form=form)
 
 
