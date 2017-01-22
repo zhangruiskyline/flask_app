@@ -9,8 +9,7 @@ from config import POSTS_PER_PAGE
 from flask_bcrypt import Bcrypt
 from werkzeug.security import generate_password_hash,check_password_hash
 from config import MAX_SEARCH_RESULTS
-
-
+from .email import follower_notification
 
 @lm.user_loader
 def user_loader(id):
@@ -132,6 +131,7 @@ def follow(nickname):
     db.session.add(u)
     db.session.commit()
     flash('You are now following ' + nickname + '!')
+    follower_notification(user, g.user)
     return redirect(url_for('user', nickname=nickname))
 
 @app.route('/unfollow/<nickname>')
