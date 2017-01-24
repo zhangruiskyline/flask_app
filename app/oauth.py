@@ -1,6 +1,6 @@
 from rauth import OAuth1Service, OAuth2Service
+from flask_oauth import OAuth
 from flask import current_app, url_for, request, redirect, session
-
 
 class OAuthSignIn(object):
     providers = None

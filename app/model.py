@@ -2,8 +2,9 @@ from app import db
 import urllib
 from hashlib import md5
 from app import app
-
+import re
 import sys
+
 if sys.version_info >= (3, 0):
     enable_search = False
 else:
@@ -68,6 +69,10 @@ class User(db.Model):
     def hashed_password(pwd):
         return md5(pwd.encode()).hexdigest()
 
+    @staticmethod
+    def make_valid_nickname(nickname):
+        return re.sub('[^a-zA-Z0-9_\.]', '', nickname)
+
     def follow(self, user):
         if not self.is_following(user):
             self.followed.append(user)
@@ -85,6 +90,8 @@ class User(db.Model):
         return Post.query.join(followers, (followers.c.followed_id == Post.user_id))\
             .filter(followers.c.follower_id == self.id)\
             .order_by(Post.timestamp.desc())
+
+
 
     def __repr__(self):
         return '<User %r>' % (self.nickname)

@@ -1,8 +1,18 @@
+# -*- coding: utf-8 -*-
+
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 CSRF_ENABLED = True
 SECRET_KEY = 'you-will-never-guess'
+
+# ...
+# available languages
+LANGUAGES = {
+    'en': 'English',
+    'zh': '中文'
+}
+
 WHOOSH_BASE = os.path.join(basedir, 'search.db')
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
