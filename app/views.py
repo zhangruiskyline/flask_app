@@ -11,7 +11,7 @@ from config import MAX_SEARCH_RESULTS, LANGUAGES, POSTS_PER_PAGE
 from .email import follower_notification
 from app import app, db, lm, babel
 from guess_language import guessLanguage
-from .translate import google_translate
+from .translate import online_translate
 
 
 @lm.user_loader
@@ -213,7 +213,7 @@ def search_results(query):
 @login_required
 def translate():
     return jsonify({
-        'text': microsoft_translate(
+        'text': online_translate(
             request.form['text'],
             request.form['sourceLang'],
             request.form['destLang'])})
