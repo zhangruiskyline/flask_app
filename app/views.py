@@ -1,15 +1,17 @@
-from flask import render_template, flash, redirect, session, url_for, request, g
+from flask import render_template, flash, redirect, session, url_for, request, g, jsonify
 from flask_login import login_user, logout_user, current_user, login_required, LoginManager
 from .forms import LoginForm, EditForm, PostForm, SearchForm
 from .model import User, Post
+from flask.ext.babel import gettext
 from datetime import datetime
 from oauth import OAuthSignIn
 from flask_bcrypt import Bcrypt
 from werkzeug.security import generate_password_hash,check_password_hash
 from config import MAX_SEARCH_RESULTS, LANGUAGES, POSTS_PER_PAGE
 from .email import follower_notification
-from flask.ext.babel import gettext
 from app import app, db, lm, babel
+from guess_language import guessLanguage
+from .translate import google_translate
 
 
 @lm.user_loader
@@ -18,7 +20,10 @@ def user_loader(id):
 
 @babel.localeselector
 def get_locale():
+    # otherwise try to guess the language from the user accept
+    # header the browser transmits.  The best match wins.
     return request.accept_languages.best_match(LANGUAGES.keys())
+
 
 @app.before_request
 def before_request():
@@ -37,7 +42,13 @@ def before_request():
 def index(page=1):
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(body=form.post.data, timestamp=datetime.utcnow(), author=g.user)
+        language = guessLanguage(form.post.data)
+        if language == 'UNKNOWN' or len(language) > 5:
+            language = ''
+        post = Post(body=form.post.data,
+                    timestamp=datetime.utcnow(),
+                    author=g.user,
+                    language=language)
         db.session.add(post)
         db.session.commit()
         flash(gettext('Your post is now live!'))
@@ -198,6 +209,30 @@ def search_results(query):
     return render_template('search_results.html',
                            query=query,
                            results=results)
+@app.route('/translate', methods=['POST'])
+@login_required
+def translate():
+    return jsonify({
+        'text': microsoft_translate(
+            request.form['text'],
+            request.form['sourceLang'],
+            request.form['destLang'])})
+
+
+@app.route('/delete/<int:id>')
+@login_required
+def delete(id):
+    post = Post.query.get(id)
+    if post is None:
+        flash('Post not found.')
+        return redirect(url_for('index'))
+    if post.author.id != g.user.id:
+        flash('You cannot delete this post.')
+        return redirect(url_for('index'))
+    db.session.delete(post)
+    db.session.commit()
+    flash('Your post has been deleted.')
+    return redirect(url_for('index'))
 
 @app.errorhandler(404)
 def not_found_error(error):

@@ -102,6 +102,7 @@ class Post(db.Model):
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    language = db.Column(db.String(5))
     '''
     The user_id field in the Post class was initialized as a foreign key,
     so that Flask-SQLAlchemy knows that this field will link to a user.

@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from config import basedir
 from app import app, db
 from app.model import User, Post
+from app.translate import google_translate
 
 class TestCase(unittest.TestCase):
     def setUp(self):
