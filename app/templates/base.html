@@ -46,7 +46,7 @@
           </a>
           <a class="navbar-brand" href="{{ url_for('index') }}">Stock Sense</a>
             <!-- Collect the nav links, forms, and other content  -->
-            <ul class="nav navbar-nav">
+            <ul class="navbar-nav">
               <li><a href="{{ url_for('index') }}">{{ _('Home') }}</a></li>
               {% if g.user.is_authenticated %}
               <li><a href="{{ url_for('user', nickname=g.user.nickname) }}">{{ _('Your Profile') }}</a></li>

@@ -12,6 +12,7 @@ from .email import follower_notification
 from app import app, db, lm, babel
 from guess_language import guessLanguage
 from .translate import online_translate
+from stock import get_data
 
 
 @lm.user_loader
@@ -152,15 +153,22 @@ def follow(nickname):
     return redirect(url_for('user', nickname=nickname))
 
 
-@app.route('/stock/<symbol>')
-@login_required
-def stock(symbol):
+@app.route("/stock_nasdaq_100")
+def stock_nasdaq_100():
+    return jsonify(get_data())
+
+@app.route('/stock')
+#@login_required
+def stock():
+    '''
     user = User.query.filter_by(nickname=nickname).first()
     if user is None:
         flash(gettext('User %s not found.' % nickname))
-        return redirect(url_for('index'))
+        return redirect(url_for('stock'))
 
     return redirect(url_for('user', nickname=nickname))
+    '''
+    return render_template("stock.html")
 
 @app.route('/unfollow/<nickname>')
 @login_required
