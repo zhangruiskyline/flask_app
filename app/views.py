@@ -151,6 +151,17 @@ def follow(nickname):
     follower_notification(user, g.user)
     return redirect(url_for('user', nickname=nickname))
 
+
+@app.route('/stock/<symbol>')
+@login_required
+def stock(symbol):
+    user = User.query.filter_by(nickname=nickname).first()
+    if user is None:
+        flash(gettext('User %s not found.' % nickname))
+        return redirect(url_for('index'))
+
+    return redirect(url_for('user', nickname=nickname))
+
 @app.route('/unfollow/<nickname>')
 @login_required
 def unfollow(nickname):
