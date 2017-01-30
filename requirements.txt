@@ -126,8 +126,10 @@ notebook==4.2.3
 numba==0.28.1+0.gfe99fbc.dirty
 numexpr==2.6.1
 numpy==1.11.3
+oauth==1.0.1
 oauth2==1.9.0.post1
 oauth2client==4.0.0
+oauthlib==0.7.2
 odo==0.5.0
 openpyxl==2.3.2
 pandas==0.18.1

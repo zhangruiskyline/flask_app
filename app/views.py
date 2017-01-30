@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, session, url_for, request, g, jsonify
+from flask import render_template, flash, redirect, session, url_for, request, g, jsonify, Markup
 from flask_login import login_user, logout_user, current_user, login_required, LoginManager
 from .forms import LoginForm, EditForm, PostForm, SearchForm
 from .model import User, Post
@@ -12,8 +12,16 @@ from .email import follower_notification
 from app import app, db, lm, babel
 from guess_language import guessLanguage
 from .translate import online_translate
-from stock import get_data
+from stock import get_nasdaq_100_data, yahoo_get_all_data
+import numpy as np
+import pandas as pd
+import bokeh
+from bokeh.plotting import figure
+from bokeh.io import show
+from bokeh.embed import components
+bv = bokeh.__version__
 
+app.vars={}
 
 @lm.user_loader
 def user_loader(id):
@@ -23,7 +31,8 @@ def user_loader(id):
 def get_locale():
     # otherwise try to guess the language from the user accept
     # header the browser transmits.  The best match wins.
-    return request.accept_languages.best_match(LANGUAGES.keys())
+    #return request.accept_languages.best_match(LANGUAGES.keys())
+    return 'en'
 
 
 @app.before_request
@@ -35,6 +44,7 @@ def before_request():
         db.session.commit()
         g.search_form = SearchForm()
     g.locale = get_locale()
+
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -116,6 +126,72 @@ def user(nickname, page=1):
                            user=user,
                            posts=posts)
 
+@app.route('/chart')
+def chart():
+    #stock_data = yahoo_get_all_data('AAPL')
+    chart_type = 'bar'
+    chartID = 0
+    chart_height = 350
+    chart = {"renderTo": chartID, "type": chart_type, "height": chart_height, }
+    series = [{"name": 'Label1', "data": [1, 2, 3]}, {"name": 'Label2', "data": [4, 5, 6]}]
+    title = {"text": 'AAPL'}
+    xAxis = {"categories": ['xAxis Data1', 'xAxis Data2', 'xAxis Data3']}
+    yAxis = {"title": {"text": 'yAxis Label'}}
+    return render_template('chart.html', chartID=chartID, chart=chart, series=series, title=title, xAxis=xAxis,
+                           yAxis=yAxis)
+
+
+@app.route('/graph', methods=['GET', 'POST'])
+def graph():
+    # Request data from Quandl and get into pandas
+    # --------------------------------------------|
+    req = 'https://www.quandl.com/api/v3/datasets/WIKI/'
+    req = '%s%s.json?&collapse=weekly' % (req, app.vars['ticker'])
+    if not app.vars['start_year'] == '':
+        req = '%s&start_date=%s-01-01' % (req, app.vars['start_year'])
+    r = requests.get(req)
+    cols = r.json()['dataset']['column_names'][0:5]
+    df = pd.DataFrame(np.array(r.json()['dataset']['data'])[:, 0:5], columns=cols)
+    df.Date = pd.to_datetime(df.Date)
+    df[['Open', 'High', 'Low', 'Close']] = df[['Open', 'High', 'Low', 'Close']].astype(float)
+    if not app.vars['start_year'] == '':
+        if df.Date.iloc[-1].year > int(app.vars['start_year']):
+            app.vars['tag'] = '%s, but Quandl record begins in %s' % (app.vars['tag'], df.Date.iloc[-1].year)
+    app.vars['desc'] = r.json()['dataset']['name'].split(',')[0]
+
+    # Make Bokeh plot and insert using components
+    # ------------------- ------------------------|
+    p = figure(plot_width=450, plot_height=450, title=app.vars['ticker'], x_axis_type="datetime")
+    if 'Range' in app.vars['select']:
+        tmpx = np.array([df.Date, df.Date[::-1]]).flatten()
+        tmpy = np.array([df.High, df.Low[::-1]]).flatten()
+        p.patch(tmpx, tmpy, alpha=0.3, color="gray", legend='Range (High/Low)')
+    if 'Open' in app.vars['select']:
+        p.line(df.Date, df.Open, line_width=2, legend='Opening price')
+    if 'Close' in app.vars['select']:
+        p.line(df.Date, df.Close, line_width=2, line_color="#FB8072", legend='Closing price')
+    p.legend.orientation = "top_left"
+
+    # axis labels
+    p.xaxis.axis_label = "Date"
+    p.xaxis.axis_label_text_font_style = 'bold'
+    p.xaxis.axis_label_text_font_size = '16pt'
+    p.xaxis.major_label_orientation = np.pi / 4
+    p.xaxis.major_label_text_font_size = '14pt'
+    p.xaxis.bounds = (df.Date.iloc[-1], df.Date.iloc[0])
+    p.yaxis.axis_label = "Price ($)"
+    p.yaxis.axis_label_text_font_style = 'bold'
+    p.yaxis.axis_label_text_font_size = '16pt'
+    p.yaxis.major_label_text_font_size = '12pt'
+
+    # render graph template
+    # ------------------- ------------------------|
+    script, div = components(p)
+    return render_template('graph.html', bv=bv, ticker=app.vars['ticker'],
+                           ttag=app.vars['desc'], yrtag=app.vars['tag'],
+                           script=script, div=div)
+
+
 @app.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
@@ -155,19 +231,10 @@ def follow(nickname):
 
 @app.route("/stock_nasdaq_100")
 def stock_nasdaq_100():
-    return jsonify(get_data())
+    return jsonify(get_nasdaq_100_data())
 
 @app.route('/stock')
-#@login_required
 def stock():
-    '''
-    user = User.query.filter_by(nickname=nickname).first()
-    if user is None:
-        flash(gettext('User %s not found.' % nickname))
-        return redirect(url_for('stock'))
-
-    return redirect(url_for('user', nickname=nickname))
-    '''
     return render_template("stock.html")
 
 @app.route('/unfollow/<nickname>')
