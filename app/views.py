@@ -12,13 +12,16 @@ from .email import follower_notification
 from app import app, db, lm, babel
 from guess_language import guessLanguage
 from .translate import online_translate
-from stock import get_nasdaq_100_data, yahoo_get_all_data
+from stock import get_nasdaq_100_data, yahoo_get_all_data, stock_values, stock_stream_thread
 import numpy as np
 import pandas as pd
 import bokeh
 from bokeh.plotting import figure
 from bokeh.io import show
 from bokeh.embed import components
+import requests
+
+
 bv = bokeh.__version__
 
 app.vars={}
@@ -126,7 +129,26 @@ def user(nickname, page=1):
                            user=user,
                            posts=posts)
 
-@app.route('/chart')
+@app.route("/stock_nasdaq_100")
+def stock_nasdaq_100():
+    return jsonify(get_nasdaq_100_data())
+
+@app.route('/stock')
+def stock():
+    return render_template("stock.html")
+
+@app.route('/data')
+def data():
+    # * 1000 to convert to javascript time
+    return jsonify(values=[(int(time)*1000, val) for time, val in stock_values])
+
+@app.route('/stock_stream')
+def stock_stream():
+    stock_symbol = 'AAPL'
+    stock_stream_thread(stock_symbol)
+    return render_template("stock_stream.html", stock_symbol =stock_symbol)
+
+@app.route('/chart',methods=['GET', 'POST'])
 def chart():
     #stock_data = yahoo_get_all_data('AAPL')
     chart_type = 'bar'
@@ -145,6 +167,12 @@ def chart():
 def graph():
     # Request data from Quandl and get into pandas
     # --------------------------------------------|
+    #for test only
+    app.vars['ticker'] = 'AAPL'
+    app.vars['start_year'] = 2015
+    app.vars['tag'] = 'Start year specified as %s' % app.vars['start_year']
+    feat = ['Open', 'Close', 'Range']
+    #Test ends
     req = 'https://www.quandl.com/api/v3/datasets/WIKI/'
     req = '%s%s.json?&collapse=weekly' % (req, app.vars['ticker'])
     if not app.vars['start_year'] == '':
@@ -162,6 +190,8 @@ def graph():
     # Make Bokeh plot and insert using components
     # ------------------- ------------------------|
     p = figure(plot_width=450, plot_height=450, title=app.vars['ticker'], x_axis_type="datetime")
+
+    app.vars['select'] = [feat[q] for q in range(3)]
     if 'Range' in app.vars['select']:
         tmpx = np.array([df.Date, df.Date[::-1]]).flatten()
         tmpy = np.array([df.High, df.Low[::-1]]).flatten()
@@ -170,7 +200,7 @@ def graph():
         p.line(df.Date, df.Open, line_width=2, legend='Opening price')
     if 'Close' in app.vars['select']:
         p.line(df.Date, df.Close, line_width=2, line_color="#FB8072", legend='Closing price')
-    p.legend.orientation = "top_left"
+    #p.legend.orientation = "top_left"
 
     # axis labels
     p.xaxis.axis_label = "Date"
@@ -227,15 +257,6 @@ def follow(nickname):
     flash(gettext('You are now following %(nickname)s!', nickname=nickname))
     follower_notification(user, g.user)
     return redirect(url_for('user', nickname=nickname))
-
-
-@app.route("/stock_nasdaq_100")
-def stock_nasdaq_100():
-    return jsonify(get_nasdaq_100_data())
-
-@app.route('/stock')
-def stock():
-    return render_template("stock.html")
 
 @app.route('/unfollow/<nickname>')
 @login_required
