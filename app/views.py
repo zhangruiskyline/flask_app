@@ -133,12 +133,12 @@ def user(nickname, page=1):
 def stock_nasdaq_100():
     return jsonify(get_nasdaq_100_data())
 
-@app.route('/stock')
-def stock():
+@app.route('/stock_bubble')
+def stock_bubble():
     return render_template("stock.html")
 
-@app.route('/data')
-def data():
+@app.route('/stock_data')
+def stock_data():
     # * 1000 to convert to javascript time
     return jsonify(values=[(int(time)*1000, val) for time, val in stock_values])
 
@@ -148,8 +148,8 @@ def stock_stream():
     stock_stream_thread(stock_symbol)
     return render_template("stock_stream.html", stock_symbol =stock_symbol)
 
-@app.route('/chart',methods=['GET', 'POST'])
-def chart():
+@app.route('/stock_chart',methods=['GET', 'POST'])
+def stock_chart():
     #stock_data = yahoo_get_all_data('AAPL')
     chart_type = 'bar'
     chartID = 0
@@ -163,8 +163,8 @@ def chart():
                            yAxis=yAxis)
 
 
-@app.route('/graph', methods=['GET', 'POST'])
-def graph():
+@app.route('/stock_graph', methods=['GET', 'POST'])
+def stock_graph():
     # Request data from Quandl and get into pandas
     # --------------------------------------------|
     #for test only
