@@ -135,7 +135,7 @@ def stock_nasdaq_100():
 
 @app.route('/stock_bubble')
 def stock_bubble():
-    return render_template("stock.html")
+    return render_template("stock_bubble.html")
 
 @app.route('/stock_data')
 def stock_data():
@@ -159,7 +159,7 @@ def stock_chart():
     title = {"text": 'AAPL'}
     xAxis = {"categories": ['xAxis Data1', 'xAxis Data2', 'xAxis Data3']}
     yAxis = {"title": {"text": 'yAxis Label'}}
-    return render_template('chart.html', chartID=chartID, chart=chart, series=series, title=title, xAxis=xAxis,
+    return render_template('stock_chart.html', chartID=chartID, chart=chart, series=series, title=title, xAxis=xAxis,
                            yAxis=yAxis)
 
 
@@ -217,7 +217,7 @@ def stock_graph():
     # render graph template
     # ------------------- ------------------------|
     script, div = components(p)
-    return render_template('graph.html', bv=bv, ticker=app.vars['ticker'],
+    return render_template('stock_graph.html', bv=bv, ticker=app.vars['ticker'],
                            ttag=app.vars['desc'], yrtag=app.vars['tag'],
                            script=script, div=div)
 
