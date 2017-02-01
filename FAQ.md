@@ -1,10 +1,11 @@
-1. Highchart usage
+## 1. Highchart usage
 
-In the HTML snippet above, we:
+### In the HTML snippet above, we:
 
 Include jQuery, Highcharts, and a Highcharts module’s Javascript code onto the page
 Set up a div with a unique ID (in this case chart-container) which we will later pass Highcharts as the desired destination of our chart
-In the Javascript snippet, we:
+
+### In the Javascript snippet, we:
 
 Set some configuration vairables including the domain the dataset lives on, the dataset’s unique ID (aka “four by four”), the query string, and finallyt the title for the chart.
 Inside jQuery’s .ready() callback, which is called once the HTML page and dependencies are fully loaded, 
