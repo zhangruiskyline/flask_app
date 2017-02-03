@@ -14,7 +14,7 @@ $(document).ready(function () {
             text: 'Stock chart'
         },
         xAxis: {
-            categories: ['Market Cap', 'Margin', 'Oranges']
+            categories: ['Market Cap', 'Margin']
         },
         yAxis: {
             title: {
