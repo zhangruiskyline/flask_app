@@ -10,11 +10,13 @@ from datetime import datetime
 import csv
 import codecs
 from threading import Thread, current_thread
+import quandl
 
 # In memory RRDB
 stock_values = deque(maxlen=1000)
 threadErrors = []
 
+quandl.ApiConfig.api_key = "SrWBDwwYmywgNJD9zbSh"
 
 
 def get_nasdaq_100_data():
@@ -36,8 +38,10 @@ def get_nasdaq_100_data():
     return RESULTS
 
 def yahoo_get_all_data(symbol):
-    RESULTS = []
+    RESULTS = ()
     company = Share(symbol)
+    stock_all = ()
+    stock_all = company.get_all()
     stock_price = company.get_price()
     stock_vol = company.get_volume()
     stock_cap = company.get_market_cap()
