@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Streaming Stocks</title>
+    <style>
+      #chart {
+        min-height: 300px;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  </head>
+  <body>
+    <div class="container">
+    <h4 class="label label-primary">{{ stock_symbol }}</h4>
+    <div id="chart"></div>
+  </body>
+  <script
+    src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
+  </script>
+  <script
+    src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js">
+  </script>
+  <script
+    src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.time.min.js">
+  </script>
+
+  <script>
+  var chart;
+
+  function get_data() {
+    $.ajax({
+        url: '/stock_data',
+        type: 'GET',
+        dataType: 'json',
+        success: on_data
+    });
+  }
+
+  function on_data(data) {
+    chart.setData([{data: data.values}]);
+    chart.setupGrid();
+    chart.draw();
+
+    setTimeout(get_data, 3000);
+  }
+
+  $(function() {
+    chart = $.plot("#chart", [ ], {xaxis: {mode: "time"}});
+    get_data();
+  });
+
+    </script>
+</html>
