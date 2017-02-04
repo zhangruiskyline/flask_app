@@ -13,3 +13,13 @@
 
 http://www.highcharts.com/docs/getting-started/your-first-chart
 https://dev.socrata.com/blog/2015/03/30/create-a-column-chart-with-highcharts.html
+
+
+Problem: navbar overlap with div
+
+solution:
+Use padding-top in body tag
+
+<body style="padding-top:50px">
+This is why beacuse the navbar is set to be fixed top, so it will stick at the top and overlaps the below divs
+http://stackoverflow.com/questions/25600076/overlapping-divs-with-bootstrap-navbar
