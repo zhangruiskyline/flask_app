@@ -151,15 +151,13 @@ def stock_stream():
 @app.route('/stock_chart',methods=['GET', 'POST'])
 def stock_chart():
     #stock_data = yahoo_get_all_data('AAPL')
-    chart_type = 'bar'
-    chartID = 0
-    chart_height = 350
-    chart = {"renderTo": chartID, "type": chart_type, "height": chart_height, }
+    chart_type = 'column'
+    chart = {"type": chart_type,}
     series = [{"name": 'Label1', "data": [1, 2, 3]}, {"name": 'Label2', "data": [4, 5, 6]}]
     title = {"text": 'AAPL'}
     xAxis = {"categories": ['xAxis Data1', 'xAxis Data2', 'xAxis Data3']}
     yAxis = {"title": {"text": 'yAxis Label'}}
-    return render_template('stock_chart.html', chartID=chartID, chart=chart, series=series, title=title, xAxis=xAxis,
+    return render_template('stock_chart.html', chart=chart, series=series, title=title, xAxis=xAxis,
                            yAxis=yAxis)
 
 

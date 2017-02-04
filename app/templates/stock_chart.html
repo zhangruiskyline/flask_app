@@ -18,7 +18,13 @@
 
         <!-- Set up HTML div where we'll place the chart -->
         <div id="chart-container" style="width: 100%; height: 400px; margin: 20px auto"></div>
-
+        <script>
+            var series = {{ series|safe }}
+            var title = {{ title|safe }}
+            var xAxis = {{ xAxis|safe }}
+            var yAxis = {{ yAxis|safe }}
+            var chart = {{ chart|safe }}
+        </script>
         <!--javascript for charts-->
         <script src="{{ url_for('.static', filename='./js/stock_chart.js') }}"></script>
 
